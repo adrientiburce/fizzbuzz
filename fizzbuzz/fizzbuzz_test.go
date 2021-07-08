@@ -58,7 +58,7 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 				Str1:  tt.fields.Str1,
 				Str2:  tt.fields.Str2,
 			}
-			if got := s.FizzBuzz(); got != tt.want {
+			if got := s.computeSuite(); got != tt.want {
 				t.Errorf("FizzBuzz.FizzBuzz() = %v, want %v", got, tt.want)
 			}
 		})

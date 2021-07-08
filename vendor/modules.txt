@@ -1,3 +1,21 @@
 # github.com/namsral/flag v1.7.4-pre
 ## explicit
 github.com/namsral/flag
+# github.com/pkg/errors v0.9.1
+github.com/pkg/errors
+# github.com/plar/go-adaptive-radix-tree v1.0.4
+github.com/plar/go-adaptive-radix-tree
+# github.com/prologic/bitcask v0.3.10
+## explicit
+github.com/prologic/bitcask
+github.com/prologic/bitcask/flock
+github.com/prologic/bitcask/internal
+github.com/prologic/bitcask/internal/config
+github.com/prologic/bitcask/internal/data
+github.com/prologic/bitcask/internal/data/codec
+github.com/prologic/bitcask/internal/index
+github.com/prologic/bitcask/internal/metadata
+# golang.org/x/exp v0.0.0-20200228211341-fcea875c7e85
+golang.org/x/exp/mmap
+# golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527
+golang.org/x/sys/unix

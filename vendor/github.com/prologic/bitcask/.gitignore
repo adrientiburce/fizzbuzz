@@ -1,0 +1,13 @@
+*~*
+*.bak
+*.db
+
+/tmp
+/dist
+/coverage.txt
+
+/bitcask
+/bitcaskd
+/bitcask_bench*
+/cmd/bitcask/bitcask
+/cmd/bitcaskd/bitcaskd
