@@ -16,11 +16,6 @@ type Service struct {
 	Db *bitcask.Bitcask
 }
 
-type Stat struct {
-	Int1 map[int]int
-	Int2 map[int]int
-}
-
 // FizzBuzz contains infos for a fizz buzz game
 type FizzBuzz struct {
 	Int1  int    `json:"int1"`
@@ -44,12 +39,11 @@ func New(dbPath string) (*Service, error) {
 }
 
 // FizzBuzz compute all numbers until limit with fizzbuzz rule
-func (s *FizzBuzz) computeSuite() string {
+func (s *FizzBuzz) computeSuite() (res string) {
 
 	if s.Limit < 1 || s.Int1 == 0 || s.Int2 == 0 {
-		return ""
+		return
 	}
-	res := ""
 
 	for i := 1; i <= s.Limit; i++ {
 		if i%(s.Int1*s.Int2) == 0 {
