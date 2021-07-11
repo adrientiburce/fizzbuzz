@@ -1,1 +1,4 @@
 cmd/fizzbuzzd/fizzbuzzd
+
+# codecove report
+coverage.out

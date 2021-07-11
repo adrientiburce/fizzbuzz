@@ -168,3 +168,45 @@ func TestFizzBuzzEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expectedStat, resStat)
 }
+
+func TestFizzBuzzEndpoint_WithError(t *testing.T) {
+	tests := []struct {
+		name         string
+		inputString  string
+		expectedCode int
+	}{
+		{
+			name: "with missing limit",
+			inputString: `{
+				"int1": 3,
+				"int2": 5,
+				"str1": "fizz",
+				"str2": "buzz"
+			}`,
+			expectedCode: http.StatusBadRequest,
+		},
+		{
+			name: "with bad json",
+			inputString: `{
+				"int1": 3,
+				"int2": 5,
+				"str1": "fizz"
+				"str2": "buzz"
+			}`,
+			expectedCode: http.StatusInternalServerError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := New()
+			req, err := http.NewRequest("GET", "/fizzbuzz", strings.NewReader(tt.inputString))
+			require.NoError(t, err)
+
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(service.FizzBuzzEndpoint)
+			handler.ServeHTTP(rr, req)
+
+			require.Equal(t, tt.expectedCode, rr.Code)
+		})
+	}
+}
