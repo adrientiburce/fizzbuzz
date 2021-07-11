@@ -25,7 +25,6 @@ func main() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/fizzbuzz", service.FizzBuzzEndpoint)
 	http.HandleFunc("/stat", service.Statistics)
-	http.HandleFunc("/delete", service.DeleteAll)
 
 	log.Printf("Listening HTTP requests on port: %d", *httpPort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), nil))

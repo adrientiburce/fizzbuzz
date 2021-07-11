@@ -1,6 +1,8 @@
 package fizzbuzz
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFizzBuzz_FizzBuzz(t *testing.T) {
 	type fields struct {
@@ -48,6 +50,17 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 			},
 			want: "1,fizz,3,fizz,5,fizz,7,fizzbuzz,9,fizz",
 		},
+		{
+			name: "fizzBuzz with wrong params",
+			fields: fields{
+				Int1:  2,
+				Int2:  4,
+				Limit: 0,
+				Str1:  "fizz",
+				Str2:  "buzz",
+			},
+			want: "",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -62,5 +75,35 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 				t.Errorf("FizzBuzz.FizzBuzz() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestValidateStruct(t *testing.T) {
+	fizzbuzz := FizzBuzz{
+		Int1:  3,
+		Int2:  5,
+		Limit: 15,
+		Str1:  "foo",
+		Str2:  "bar",
+	}
+
+	err := validateStruct(fizzbuzz)
+	if err != nil {
+		t.Error("fizzBuzz shoudl be valid")
+	}
+}
+
+func TestValidateStruct_WithError(t *testing.T) {
+	fizzbuzz := FizzBuzz{
+		Int1:  3,
+		Limit: 10,
+		Str1:  "foo",
+		Str2:  "bar",
+	}
+
+	err := validateStruct(fizzbuzz)
+	expected := "Key: 'FizzBuzz.Int2' Error:Field validation for 'Int2' failed on the 'required' tag"
+	if got := err.Error(); got != expected {
+		t.Errorf("error returned: %v, want %v", got, expected)
 	}
 }
