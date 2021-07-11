@@ -17,7 +17,7 @@ type Service struct {
 	sync.Mutex
 }
 
-// Statistics store satisticts on used parameters for fizzbuzz endpoint
+// Statistics store satisticts for most used parameters on fizzbuzz endpoint
 type Statistics struct {
 	Int1Stat  map[int]int    `json:"int1"`
 	Int2Stat  map[int]int    `json:"int2"`
@@ -70,11 +70,11 @@ func (s *FizzBuzz) computeSuite() (res string) {
 	return res[:len(res)-1]
 }
 
-// Statistics endpoint to show fizzbuzz statistics fir every parameters
-func (s *Service) Statistics(w http.ResponseWriter, r *http.Request) {
+// StatisticsEndpoint show fizzbuzz statistics for every parameters
+func (s *Service) StatisticsEndpoint(w http.ResponseWriter, r *http.Request) {
 	res, err := json.MarshalIndent(s.fizzBuzzStat, "", "\t")
 	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to decode request (%s)", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("failed to show statistics (%s)", err), http.StatusInternalServerError)
 	}
 	fmt.Fprint(w, string(res))
 }

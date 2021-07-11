@@ -1,7 +1,26 @@
 
 [![Build status](https://github.com/adrientiburce/fizzbuzz/actions/workflows/ci.yml/badge.svg)](https://github.com/adrientiburce/fizzbuzz/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/adrientiburce/fizzbuzz/branch/master/graph/badge.svg?token=UH5M5HCWJU)](https://codecov.io/gh/adrientiburce/fizzbuzz)
-# Fizz-buzz REST server.
+
+# Endpoints 
+
+- /fizzbuzz (GET) with a body containing 5 parameters : displays the fizzbuzz suite
+
+Request body example :
+
+```json
+{
+	"int1": 3,
+	"int2": 5,
+	"limit": 100,
+	"str1": "fizz",
+	"str2": "buzz"
+}
+```
+
+- /statistics (GET) : displays the number of times each parameter has been called
+
+# Fizz-buzz REST server
 
 The original fizz-buzz consists in writing all numbers from 1 to 100, and just replacing all multiples of 3 by "fizz", all multiples of 5 by "buzz", and all multiples of 15 by "fizzbuzz".
 The output would look like this: "1,2,fizz,4,buzz,fizz,7,8,fizz,buzz,11,fizz,13,14,fizzbuzz,16,...".

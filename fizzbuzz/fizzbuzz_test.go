@@ -144,7 +144,7 @@ func TestFizzBuzzEndpoint(t *testing.T) {
 	require.NoError(t, err)
 
 	rr = httptest.NewRecorder()
-	handlerStat := http.HandlerFunc(service.Statistics)
+	handlerStat := http.HandlerFunc(service.StatisticsEndpoint)
 	handlerStat.ServeHTTP(rr, statReq)
 
 	file, err := ioutil.ReadFile("../testdata/stat/stat1.json")
@@ -156,6 +156,7 @@ func TestFizzBuzzEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	handler.ServeHTTP(rr, req)
 
+	// second statistics call to check parameters are correctly incremented
 	rr = httptest.NewRecorder()
 	handlerStat.ServeHTTP(rr, statReq)
 	file, err = ioutil.ReadFile("../testdata/stat/stat2.json")
@@ -186,12 +187,13 @@ func TestFizzBuzzEndpoint_WithError(t *testing.T) {
 			expectedCode: http.StatusBadRequest,
 		},
 		{
-			name: "with bad json",
+			name: "with bad json: missing coma",
 			inputString: `{
 				"int1": 3,
 				"int2": 5,
-				"str1": "fizz"
+				"str1": "fizz",
 				"str2": "buzz"
+				"limit": "1"
 			}`,
 			expectedCode: http.StatusInternalServerError,
 		},
