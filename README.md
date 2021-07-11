@@ -1,4 +1,6 @@
 
+[![Build status](https://github.com/adrientiburce/fizzbuzz/actions/workflows/ci.yml/badge.svg)](https://github.com/adrientiburce/fizzbuzz/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/adrientiburce/fizzbuzz/branch/master/graph/badge.svg?token=UH5M5HCWJU)](https://codecov.io/gh/adrientiburce/fizzbuzz)
 # Fizz-buzz REST server.
 
 The original fizz-buzz consists in writing all numbers from 1 to 100, and just replacing all multiples of 3 by "fizz", all multiples of 5 by "buzz", and all multiples of 15 by "fizzbuzz".
