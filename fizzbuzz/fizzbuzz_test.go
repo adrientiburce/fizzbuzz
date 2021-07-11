@@ -1,10 +1,17 @@
 package fizzbuzz
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-func TestFizzBuzz_FizzBuzz(t *testing.T) {
+func TestComputeSuite(t *testing.T) {
 	type fields struct {
 		Int1  int
 		Int2  int
@@ -18,7 +25,7 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 		want   string
 	}{
 		{
-			name: "fizzBuzz basic",
+			name: "fizzBuzz basic suite",
 			fields: fields{
 				Int1:  3,
 				Int2:  5,
@@ -29,7 +36,7 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 			want: "1,2,fizz,4,buzz,fizz,7,8,fizz,buzz,11,fizz,13,14,fizzbuzz,16",
 		},
 		{
-			name: "fooBar until 15",
+			name: "fizzbuzz with foo & bar until 15",
 			fields: fields{
 				Int1:  3,
 				Int2:  5,
@@ -51,7 +58,7 @@ func TestFizzBuzz_FizzBuzz(t *testing.T) {
 			want: "1,fizz,3,fizz,5,fizz,7,fizzbuzz,9,fizz",
 		},
 		{
-			name: "fizzBuzz with wrong params",
+			name: "fizzBuzz with wrong parameters",
 			fields: fields{
 				Int1:  2,
 				Int2:  4,
@@ -88,9 +95,7 @@ func TestValidateStruct(t *testing.T) {
 	}
 
 	err := validateStruct(fizzbuzz)
-	if err != nil {
-		t.Error("fizzBuzz shoudl be valid")
-	}
+	require.NoError(t, err)
 }
 
 func TestValidateStruct_WithError(t *testing.T) {
@@ -103,7 +108,63 @@ func TestValidateStruct_WithError(t *testing.T) {
 
 	err := validateStruct(fizzbuzz)
 	expected := "Key: 'FizzBuzz.Int2' Error:Field validation for 'Int2' failed on the 'required' tag"
-	if got := err.Error(); got != expected {
-		t.Errorf("error returned: %v, want %v", got, expected)
-	}
+	require.Equal(t, expected, err.Error())
+}
+
+var fizzbuzzStr = `{
+	"int1": 3,
+	"int2": 5,
+	"limit": 16,
+	"str1": "fizz",
+	"str2": "buzz"
+}`
+
+var fooBarStr = `{
+	"int1": 3,
+	"int2": 5,
+	"limit": 10,
+	"str1": "foo",
+	"str2": "bar"
+}`
+
+func TestFizzBuzzEndpoint(t *testing.T) {
+	service := New()
+	req, err := http.NewRequest("GET", "/fizzbuzz", strings.NewReader(fizzbuzzStr))
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(service.FizzBuzzEndpoint)
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	require.Equal(t, "1,2,fizz,4,buzz,fizz,7,8,fizz,buzz,11,fizz,13,14,fizzbuzz,16", rr.Body.String())
+
+	// first request to statistic endpoint
+	statReq, err := http.NewRequest("GET", "/statistics", strings.NewReader(fizzbuzzStr))
+	require.NoError(t, err)
+
+	rr = httptest.NewRecorder()
+	handlerStat := http.HandlerFunc(service.Statistics)
+	handlerStat.ServeHTTP(rr, statReq)
+
+	file, err := ioutil.ReadFile("../testdata/stat/stat1.json")
+	require.NoError(t, err)
+	require.Equal(t, string(file), rr.Body.String())
+
+	// second fizzbuzz call with other parameters
+	req, err = http.NewRequest("GET", "/fizzbuzz", strings.NewReader(fooBarStr))
+	require.NoError(t, err)
+	handler.ServeHTTP(rr, req)
+
+	rr = httptest.NewRecorder()
+	handlerStat.ServeHTTP(rr, statReq)
+	file, err = ioutil.ReadFile("../testdata/stat/stat2.json")
+	require.NoError(t, err)
+	var expectedStat, resStat Statistics
+	err = json.Unmarshal(file, &expectedStat)
+	require.NoError(t, err)
+
+	err = json.NewDecoder(rr.Body).Decode(&resStat)
+	require.NoError(t, err)
+	require.Equal(t, expectedStat, resStat)
 }

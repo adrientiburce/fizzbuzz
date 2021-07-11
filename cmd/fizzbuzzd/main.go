@@ -11,20 +11,16 @@ import (
 
 var (
 	httpPort = flag.Int("httpPort", 1082, "http port to listen on")
-	dbPath   = flag.String("dbPath", "/tmp/fizzbuzz", "path of the database folder")
 )
 
 func main() {
 	flag.Parse()
 
-	service, err := fizzbuzz.New(*dbPath)
-	if err != nil {
-		log.Fatalf("cant create service %s", err)
-	}
+	service := fizzbuzz.New()
 
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/fizzbuzz", service.FizzBuzzEndpoint)
-	http.HandleFunc("/stat", service.Statistics)
+	http.HandleFunc("/statistics", service.Statistics)
 
 	log.Printf("Listening HTTP requests on port: %d", *httpPort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), nil))

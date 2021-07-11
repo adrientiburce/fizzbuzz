@@ -13,12 +13,12 @@ import (
 
 // Service to handle a fizzbuzz server
 type Service struct {
-	fizzBuzzStat Stat
+	fizzBuzzStat Statistics
 	sync.Mutex
 }
 
-// Stat store satisticts on params call with fizzbuzz endpoint
-type Stat struct {
+// Statistics store satisticts on used parameters for fizzbuzz endpoint
+type Statistics struct {
 	Int1Stat  map[int]int    `json:"int1"`
 	Int2Stat  map[int]int    `json:"int2"`
 	LimitStat map[int]int    `json:"limit"`
@@ -26,7 +26,7 @@ type Stat struct {
 	Str2Stat  map[string]int `json:"str2"`
 }
 
-// FizzBuzz contains infos for a fizz buzz game
+// FizzBuzz contains all parameters needed for a fizz buzz game
 type FizzBuzz struct {
 	Int1  int    `json:"int1" validate:"required"`
 	Int2  int    `json:"int2" validate:"required"`
@@ -36,21 +36,20 @@ type FizzBuzz struct {
 }
 
 // New create a Fizzbuzz service
-func New(dbPath string) (*Service, error) {
+func New() *Service {
 	return &Service{
-		fizzBuzzStat: Stat{
+		fizzBuzzStat: Statistics{
 			Int1Stat:  make(map[int]int),
 			Int2Stat:  make(map[int]int),
 			LimitStat: make(map[int]int),
 			Str1Stat:  make(map[string]int),
 			Str2Stat:  make(map[string]int),
 		},
-	}, nil
+	}
 }
 
 // computeSuite compute all numbers until limit with fizzbuzz rule
 func (s *FizzBuzz) computeSuite() (res string) {
-
 	if s.Limit < 1 || s.Int1 == 0 || s.Int2 == 0 {
 		return
 	}
@@ -71,9 +70,8 @@ func (s *FizzBuzz) computeSuite() (res string) {
 	return res[:len(res)-1]
 }
 
-// Statistics endpoint to show server stats
+// Statistics endpoint to show fizzbuzz statistics fir every parameters
 func (s *Service) Statistics(w http.ResponseWriter, r *http.Request) {
-
 	res, err := json.MarshalIndent(s.fizzBuzzStat, "", "\t")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to decode request (%s)", err), http.StatusInternalServerError)
@@ -81,13 +79,17 @@ func (s *Service) Statistics(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(res))
 }
 
-// FizzBuzzEndpoint show fizzbuzz suite according to input params
+// FizzBuzzEndpoint show fizzbuzz suite according to input parameters
 func (s *Service) FizzBuzzEndpoint(w http.ResponseWriter, r *http.Request) {
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to read body (%s)", err), http.StatusInternalServerError)
+		return
+
+	}
 
 	var fizzBuzz FizzBuzz
-	err := json.Unmarshal(reqBody, &fizzBuzz)
-	if err != nil {
+	if err = json.Unmarshal(reqBody, &fizzBuzz); err != nil {
 		http.Error(w, fmt.Sprintf("failed to decode request (%s)", err), http.StatusInternalServerError)
 		return
 	}
